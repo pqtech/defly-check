@@ -43,6 +43,16 @@ async def check_servers(ctx: commands.Context, port: Optional[str] = None) -> No
 
 
 @bot.command()
+async def get_link(
+    ctx: commands.Context, region: str, port: Optional[str] = None
+) -> None:
+    if __debug__:
+        bot_utils.logger(ctx, bot_utils.Logger.GET_LINK)
+
+    await ctx.send(bot_utils.get_link(region=region, port=port))
+
+
+@bot.command()
 async def search_player(ctx: commands.Context, *args) -> None:
     if __debug__:
         bot_utils.logger(ctx, bot_utils.Logger.SEARCH_PLAYER)
@@ -87,10 +97,34 @@ async def add_player(ctx: commands.Context, *args) -> None:
 
 
 @bot.command()
+async def remove_player(ctx: commands.Context, *args) -> None:
+    if __debug__:
+        bot_utils.logger(ctx, bot_utils.Logger.ADD_PLAYER)
+
+    username = " ".join(args)
+    if username:
+        if username in ("Player",):
+            await ctx.send("srysly??")
+        else:
+            if username in tracklist:
+                tracklist.remove(username)
+                bot_utils.save_tracklist(tracklist)
+                await ctx.send(f"{username} is in tracklist now")
+            else:
+                await ctx.send("he is already in not there")
+    else:
+        await bot_utils.error(ctx)
+
+
+@bot.command()
 async def help(ctx: commands.Context) -> None:
     if __debug__:
         bot_utils.logger(ctx, bot_utils.Logger.HELP)
     await ctx.send(embed=bot_utils.HELP_MSG)
 
 
-bot.run(getenv("DISCORD_TOKEN"))
+bot.run(
+    getenv(
+        "DISCORD_TOKEN"
+    )
+)
